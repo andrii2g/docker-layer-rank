@@ -77,6 +77,7 @@ def build_layer_report(
     image: ImageSummary,
     layers: list[LayerRecord],
     raw_inspect_json: list[dict] | None,
+    generated_at: str = "",
 ) -> LayerReport:
     history_size_total_bytes = sum(layer.size_bytes for layer in layers)
     ranked_layers = sorted(layers, key=lambda layer: (-layer.size_bytes, layer.history_index))
@@ -84,7 +85,7 @@ def build_layer_report(
         image=image,
         layers=layers,
         ranked_layers=ranked_layers,
-        generated_at="",
+        generated_at=generated_at,
         history_size_total_bytes=history_size_total_bytes,
         non_empty_count=sum(1 for layer in layers if not layer.is_empty),
         empty_count=sum(1 for layer in layers if layer.is_empty),

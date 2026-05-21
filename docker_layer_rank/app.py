@@ -20,17 +20,7 @@ def generate_report_for_image(image: str, output_dir: Path, include_inspect: boo
         image=image_summary,
         layers=layers,
         raw_inspect_json=inspect_data if include_inspect else None,
-    )
-    report = report.__class__(
-        image=report.image,
-        layers=report.layers,
-        ranked_layers=report.ranked_layers,
         generated_at=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        history_size_total_bytes=report.history_size_total_bytes,
-        non_empty_count=report.non_empty_count,
-        empty_count=report.empty_count,
-        include_raw_inspect=report.include_raw_inspect,
-        raw_inspect_json=report.raw_inspect_json,
     )
 
     markdown = render_markdown_report(report)
