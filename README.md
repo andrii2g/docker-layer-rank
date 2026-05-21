@@ -1,5 +1,20 @@
 # docker-layer-rank
 
+## Quickstart
+
+From this repository root, run:
+
+```bash
+python3 -m docker_layer_rank alpine:latest
+```
+
+If you want the `docker-layer-rank` command available directly, install the project first:
+
+```bash
+python3 -m pip install -e .
+docker-layer-rank alpine:latest
+```
+
 ## What it does
 
 `docker-layer-rank` analyzes a locally available Docker image and generates a Markdown report ranking image history entries by size contribution.
@@ -30,7 +45,7 @@ pip install .[dev]
 docker-layer-rank nginx:latest
 docker-layer-rank my-app:dev --output reports
 docker-layer-rank my-app:dev --inspect --output reports
-python -m docker_layer_rank nginx:latest
+python3 -m docker_layer_rank nginx:latest
 ```
 
 The image must already exist locally. This tool does not pull images for you.
@@ -105,8 +120,8 @@ Tests use `pytest`.
 Useful commands:
 
 ```bash
-python -m compileall docker_layer_rank tests
-python -m pytest -q
+python3 -m compileall docker_layer_rank tests
+python3 -m pytest -q
 ```
 
 `pytest` is declared in the `dev` extra but may need to be installed in your local environment before running the test suite.
