@@ -10,13 +10,13 @@ from .errors import OutputPathError
 def prepare_output_dir(output_dir: Path) -> Path:
     directory = Path(output_dir).resolve()
     if directory.exists() and not directory.is_dir():
-        raise OutputPathError(f"invalid output directory: {directory}")
+        raise _invalid_output_dir_error(directory, "path exists but is not a directory.")
 
     if not directory.exists():
         try:
             directory.mkdir(parents=True, exist_ok=True)
         except OSError as exc:
-            raise OutputPathError(f"invalid output directory: {directory}") from exc
+            raise _invalid_output_dir_error(directory, _os_error_reason(exc)) from exc
 
     probe_output_dir_writable(directory)
     return directory
@@ -42,12 +42,12 @@ def probe_output_dir_writable(directory: Path) -> None:
                 probe_path.unlink(missing_ok=True)
             except OSError:
                 pass
-        raise OutputPathError(f"directory is not writable: {directory}") from exc
+        raise _invalid_output_dir_error(directory, _os_error_reason(exc)) from exc
 
     try:
         probe_path.unlink(missing_ok=True)
     except OSError as exc:
-        raise OutputPathError(f"could not remove temporary write probe: {probe_path}") from exc
+        raise _invalid_output_dir_error(directory, f"could not remove temporary write probe: {probe_path.name}") from exc
 
 
 def create_report_path(output_dir: Path, now: datetime | None = None) -> Path:
@@ -70,4 +70,16 @@ def write_report_file(report_path: Path, markdown: str) -> None:
         with report_path.open("x", encoding="utf-8") as report_file:
             report_file.write(markdown)
     except OSError as exc:
-        raise OutputPathError(f"failed to write report: {report_path}") from exc
+        raise OutputPathError(
+            f"failed to write report: {report_path}\nReason: {_os_error_reason(exc)}"
+        ) from exc
+
+
+def _invalid_output_dir_error(directory: Path, reason: str) -> OutputPathError:
+    return OutputPathError(f"invalid output directory: {directory}\nReason: {reason}")
+
+
+def _os_error_reason(exc: OSError) -> str:
+    if exc.strerror:
+        return exc.strerror.rstrip(".") + "."
+    return str(exc) or "filesystem error."
