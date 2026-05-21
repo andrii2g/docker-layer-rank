@@ -82,4 +82,5 @@ def _invalid_output_dir_error(directory: Path, reason: str) -> OutputPathError:
 def _os_error_reason(exc: OSError) -> str:
     if exc.strerror:
         return exc.strerror.rstrip(".") + "."
-    return str(exc) or "filesystem error."
+    text = str(exc).strip()
+    return f"{text}." if text and not text.endswith(".") else (text or "filesystem error.")

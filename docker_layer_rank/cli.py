@@ -8,6 +8,7 @@ from .app import generate_report_for_image
 from .errors import (
     DockerHistoryError,
     DockerInspectError,
+    DockerLayerRankError,
     DockerUnavailableError,
     ImageNotFoundError,
     OutputPathError,
@@ -45,6 +46,14 @@ def build_parser() -> argparse.ArgumentParser:
 def _looks_like_registry_host(image: str) -> bool:
     first_segment = image.split("/", 1)[0]
     return "." in first_segment or ":" in first_segment or first_segment == "localhost"
+
+
+def _short_reason(message: str) -> str:
+    for line in message.splitlines():
+        stripped = line.strip()
+        if stripped:
+            return stripped
+    return ""
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -92,8 +101,15 @@ def main(argv: list[str] | None = None) -> int:
         return 4
     except DockerInspectError as exc:
         print("Error: Docker image inspect failed.", file=sys.stderr)
-        if str(exc):
-            print(f"Reason: {exc}", file=sys.stderr)
+        reason = _short_reason(str(exc))
+        if reason:
+            print(f"Reason: {reason}", file=sys.stderr)
+        return 1
+    except DockerLayerRankError as exc:
+        print("Error: application failed.", file=sys.stderr)
+        reason = _short_reason(str(exc))
+        if reason:
+            print(f"Reason: {reason}", file=sys.stderr)
         return 1
 
     print(f"Report generated: {report_path}")
