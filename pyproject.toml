@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "docker-layer-rank"
+version = "0.1.0"
+description = "Generate a Markdown report ranking local Docker image history entries by size."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []
+license = { text = "MIT" }
+authors = [
+  { name = "Your Name" }
+]
+keywords = ["docker", "containers", "layers", "cli", "devops"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "Topic :: Software Development :: Build Tools",
+  "Topic :: System :: Systems Administration"
+]
+
+[project.scripts]
+docker-layer-rank = "docker_layer_rank.cli:main"
