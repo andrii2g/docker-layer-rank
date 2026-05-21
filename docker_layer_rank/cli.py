@@ -42,6 +42,11 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def _looks_like_registry_host(image: str) -> bool:
+    first_segment = image.split("/", 1)[0]
+    return "." in first_segment or ":" in first_segment or first_segment == "localhost"
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
@@ -64,7 +69,20 @@ def main(argv: list[str] | None = None) -> int:
         print(f"Error: image not found locally: {exc.image}", file=sys.stderr)
         print("", file=sys.stderr)
         print("This tool analyzes local Docker images only.", file=sys.stderr)
-        print("Pull the image first.", file=sys.stderr)
+        if _looks_like_registry_host(exc.image):
+            registry_host = exc.image.split("/", 1)[0]
+            print("For private images, authenticate and pull the image first:", file=sys.stderr)
+            print("", file=sys.stderr)
+            print(f"  docker login {registry_host}", file=sys.stderr)
+            print(f"  docker pull {exc.image}", file=sys.stderr)
+        else:
+            print("Pull the image first:", file=sys.stderr)
+            print("", file=sys.stderr)
+            print(f"  docker pull {exc.image}", file=sys.stderr)
+        print("", file=sys.stderr)
+        print("Then run:", file=sys.stderr)
+        print("", file=sys.stderr)
+        print(f"  docker-layer-rank {exc.image}", file=sys.stderr)
         return 2
     except OutputPathError as exc:
         print(f"Error: {exc}", file=sys.stderr)
