@@ -111,21 +111,3 @@ docker-layer-rank alpine:latest --inspect --output reports
 
 Reports may contain image metadata, environment variables, labels, and build commands. Treat generated reports as potentially sensitive, especially for private images.
 
-## Development
-
-The project uses only the Python standard library at runtime.
-
-Tests use `pytest`.
-
-Useful commands:
-
-```bash
-python3 -m compileall docker_layer_rank tests
-python3 -m pytest -q
-```
-
-`pytest` is declared in the `dev` extra but may need to be installed in your local environment before running the test suite.
-
-## License
-
-MIT
